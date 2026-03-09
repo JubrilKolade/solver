@@ -1,4 +1,6 @@
-import type { Solution } from './mathSolver';
+// import type { Solution } from './mathSolver';
+
+import type { Solution } from "./mathSolver";
 
 function fmt(n: number): string {
   if (Number.isInteger(n)) return n.toString();

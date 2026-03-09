@@ -1,5 +1,6 @@
 import * as math from 'mathjs';
-import { type Solution, type SolutionStep } from './mathSolver';
+import type { Solution, SolutionStep } from './mathSolver';
+
 
 function fmt(n: number): string {
   if (Number.isInteger(n)) return n.toString();
