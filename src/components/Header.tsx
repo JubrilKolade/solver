@@ -13,7 +13,7 @@ export function Header() {
           <span className="text-2xl">🧮</span>
         </div>
         <div>
-          <h1 className="text-2xl sm:text-3xl font-display accent-text-gradient">MathSolver</h1>
+          <h1 className="text-2xl sm:text-3xl font-display accent-text-gradient">Solver</h1>
           <p className="text-xs font-body hidden sm:block" style={{ color: 'var(--text-muted)' }}>
             Step-by-step solutions for every math problem
           </p>

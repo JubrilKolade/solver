@@ -31,14 +31,12 @@ export function GeometryTools({ onSolution, imageUrl }: GeometryToolsProps) {
 
   const handleSolve = () => {
     if (!selectedShape || !selectedFormula) return;
-
     const numValues: Record<string, number> = {};
     for (const input of selectedFormula.inputs) {
       const val = parseFloat(values[input.key] || '');
       if (isNaN(val)) return;
       numValues[input.key] = val;
     }
-
     const solution = solveGeometry(selectedShape.id, selectedFormula.id, numValues);
     onSolution(solution);
   };
@@ -48,26 +46,24 @@ export function GeometryTools({ onSolution, imageUrl }: GeometryToolsProps) {
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Reference Image */}
       {imageUrl && (
-        <div className="bg-white/3 rounded-2xl border border-white/10 overflow-hidden">
+        <div className="rounded-2xl border overflow-hidden" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-subtle)' }}>
           <button
             onClick={() => setShowImage(!showImage)}
-            className="w-full flex items-center justify-between px-5 py-3 hover:bg-white/2 transition-all"
+            className="w-full flex items-center justify-between px-5 py-3 transition-all"
           >
             <div className="flex items-center gap-2">
-              <svg className="w-4 h-4 text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-              </svg>
-              <span className="text-sm text-gray-300">Reference Image</span>
+              <span>📷</span>
+              <span className="text-sm font-body" style={{ color: 'var(--text-secondary)' }}>Reference Image</span>
             </div>
-            <svg className={cn("w-4 h-4 text-gray-500 transition-transform", showImage && "rotate-180")} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+            <svg className={cn("w-4 h-4 transition-transform", showImage && "rotate-180")} style={{ color: 'var(--text-muted)' }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
             </svg>
           </button>
           {showImage && (
-            <div className="p-4 border-t border-white/5 bg-black/20 flex justify-center">
+            <div className="p-4 border-t flex justify-center" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-subtle)' }}>
               <img src={imageUrl} alt="Reference" className="max-h-[200px] rounded-lg object-contain" />
             </div>
           )}
@@ -76,8 +72,9 @@ export function GeometryTools({ onSolution, imageUrl }: GeometryToolsProps) {
 
       {/* Step 1: Shape Selection */}
       <div>
-        <h3 className="text-sm font-medium text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-          <span className="w-6 h-6 rounded-full bg-indigo-600 text-white text-xs flex items-center justify-center font-bold">1</span>
+        <h3 className="text-sm font-display uppercase tracking-wider mb-3 flex items-center gap-2" style={{ color: 'var(--text-muted)' }}>
+          <span className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
+            style={{ background: 'var(--accent)', color: 'var(--bg-primary)' }}>1</span>
           Select Shape
         </h3>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -85,15 +82,16 @@ export function GeometryTools({ onSolution, imageUrl }: GeometryToolsProps) {
             <button
               key={shape.id}
               onClick={() => handleShapeSelect(shape)}
-              className={cn(
-                'flex flex-col items-center gap-2 p-4 rounded-2xl border transition-all duration-200',
-                selectedShape?.id === shape.id
-                  ? 'bg-indigo-600/20 border-indigo-500/50 text-white shadow-lg shadow-indigo-500/10'
-                  : 'bg-white/3 border-white/10 text-gray-400 hover:text-white hover:bg-white/6 hover:border-white/20'
-              )}
+              className="flex flex-col items-center gap-2 p-4 rounded-2xl border transition-all duration-200"
+              style={{
+                background: selectedShape?.id === shape.id ? 'var(--accent-glow)' : 'var(--bg-subtle)',
+                borderColor: selectedShape?.id === shape.id ? 'var(--accent)' : 'var(--border-color)',
+                color: selectedShape?.id === shape.id ? 'var(--accent)' : 'var(--text-secondary)',
+                boxShadow: selectedShape?.id === shape.id ? '0 0 20px var(--glow-color)' : 'none',
+              }}
             >
               <span className="text-2xl">{shape.icon}</span>
-              <span className="text-sm font-medium">{shape.name}</span>
+              <span className="text-sm font-medium font-body">{shape.name}</span>
             </button>
           ))}
         </div>
@@ -102,8 +100,9 @@ export function GeometryTools({ onSolution, imageUrl }: GeometryToolsProps) {
       {/* Step 2: Formula Selection */}
       {selectedShape && (
         <div className="animate-fade-in-up">
-          <h3 className="text-sm font-medium text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-            <span className="w-6 h-6 rounded-full bg-indigo-600 text-white text-xs flex items-center justify-center font-bold">2</span>
+          <h3 className="text-sm font-display uppercase tracking-wider mb-3 flex items-center gap-2" style={{ color: 'var(--text-muted)' }}>
+            <span className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
+              style={{ background: 'var(--accent)', color: 'var(--bg-primary)' }}>2</span>
             Select Formula / Theorem
           </h3>
           <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1 custom-scrollbar">
@@ -111,28 +110,21 @@ export function GeometryTools({ onSolution, imageUrl }: GeometryToolsProps) {
               <button
                 key={formula.id}
                 onClick={() => handleFormulaSelect(formula)}
-                className={cn(
-                  'w-full text-left px-4 py-3 rounded-xl border transition-all duration-200 group',
-                  selectedFormula?.id === formula.id
-                    ? 'bg-indigo-600/20 border-indigo-500/50 text-white'
-                    : 'bg-white/2 border-white/5 text-gray-400 hover:text-white hover:bg-white/5 hover:border-white/15'
-                )}
+                className="w-full text-left px-4 py-3 rounded-xl border transition-all duration-200 group"
+                style={{
+                  background: selectedFormula?.id === formula.id ? 'var(--accent-glow)' : 'var(--bg-subtle)',
+                  borderColor: selectedFormula?.id === formula.id ? 'var(--accent)' : 'var(--border-color)',
+                }}
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="font-medium text-sm">{formula.name}</div>
-                    <div className="text-xs text-gray-500 mt-0.5 font-mono">{formula.description}</div>
+                    <div className="font-medium text-sm font-body" style={{ color: selectedFormula?.id === formula.id ? 'var(--accent)' : 'var(--text-primary)' }}>
+                      {formula.name}
+                    </div>
+                    <div className="text-xs font-mono mt-0.5" style={{ color: 'var(--text-muted)' }}>{formula.description}</div>
                   </div>
-                  <svg
-                    className={cn(
-                      'w-4 h-4 transition-all',
-                      selectedFormula?.id === formula.id ? 'text-indigo-400' : 'text-gray-600 group-hover:text-gray-400'
-                    )}
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
+                  <svg className="w-4 h-4 transition-all" style={{ color: selectedFormula?.id === formula.id ? 'var(--accent)' : 'var(--text-faint)' }}
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                   </svg>
                 </div>
@@ -145,30 +137,37 @@ export function GeometryTools({ onSolution, imageUrl }: GeometryToolsProps) {
       {/* Step 3: Input Values */}
       {selectedFormula && (
         <div className="animate-fade-in-up">
-          <h3 className="text-sm font-medium text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-            <span className="w-6 h-6 rounded-full bg-indigo-600 text-white text-xs flex items-center justify-center font-bold">3</span>
+          <h3 className="text-sm font-display uppercase tracking-wider mb-3 flex items-center gap-2" style={{ color: 'var(--text-muted)' }}>
+            <span className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
+              style={{ background: 'var(--accent)', color: 'var(--bg-primary)' }}>3</span>
             Enter Values
           </h3>
-          <div className="bg-white/3 rounded-2xl border border-white/10 p-5 space-y-4">
-            <div className="bg-indigo-500/10 rounded-xl px-4 py-3 border border-indigo-500/20">
-              <p className="text-sm text-indigo-300 font-medium">{selectedFormula.name}</p>
-              <p className="text-xs text-gray-500 mt-0.5 font-mono">{selectedFormula.description}</p>
+          <div className="rounded-2xl border p-5 space-y-4" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-subtle)' }}>
+            {/* Selected formula info */}
+            <div className="rounded-xl px-4 py-3 border" style={{ background: 'var(--accent-glow)', borderColor: 'var(--border-accent)' }}>
+              <p className="text-sm font-display" style={{ color: 'var(--accent)' }}>{selectedFormula.name}</p>
+              <p className="text-xs font-mono mt-0.5" style={{ color: 'var(--text-muted)' }}>{selectedFormula.description}</p>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
               {selectedFormula.inputs.map((input) => (
                 <div key={input.key}>
-                  <label className="block text-xs font-medium text-gray-400 mb-1.5">{input.label}</label>
+                  <label className="block text-xs font-medium mb-1.5 font-body" style={{ color: 'var(--text-muted)' }}>{input.label}</label>
                   <input
                     type="number"
                     step="any"
                     value={values[input.key] || ''}
                     onChange={(e) => handleValueChange(input.key, e.target.value)}
                     placeholder={input.placeholder}
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-indigo-500/50 focus:ring-2 focus:ring-indigo-500/20 transition-all text-sm"
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && allFilled) handleSolve();
+                    className="w-full px-4 py-3 rounded-xl text-sm font-body transition-all focus:outline-none"
+                    style={{
+                      background: 'var(--bg-input)',
+                      border: '1.5px solid var(--border-color)',
+                      color: 'var(--text-primary)',
                     }}
+                    onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.boxShadow = '0 0 15px var(--glow-color)'; }}
+                    onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--border-color)'; e.currentTarget.style.boxShadow = 'none'; }}
+                    onKeyDown={(e) => { if (e.key === 'Enter' && allFilled) handleSolve(); }}
                   />
                 </div>
               ))}
@@ -178,16 +177,17 @@ export function GeometryTools({ onSolution, imageUrl }: GeometryToolsProps) {
               onClick={handleSolve}
               disabled={!allFilled}
               className={cn(
-                'w-full py-3.5 rounded-xl font-semibold text-white transition-all flex items-center justify-center gap-2',
-                allFilled
-                  ? 'bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 shadow-lg shadow-indigo-500/25 hover:scale-[1.01] active:scale-[0.99]'
-                  : 'bg-gray-700 cursor-not-allowed opacity-50'
+                'w-full py-3.5 rounded-xl font-display transition-all flex items-center justify-center gap-2',
+                !allFilled && 'opacity-40 cursor-not-allowed',
+                allFilled && 'hover:scale-[1.01] active:scale-[0.99]'
               )}
+              style={{
+                background: allFilled ? 'var(--accent)' : 'var(--text-faint)',
+                color: allFilled ? 'var(--bg-primary)' : 'var(--text-muted)',
+                boxShadow: allFilled ? '0 4px 20px var(--accent-glow-strong)' : 'none',
+              }}
             >
-              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
-              </svg>
-              Calculate Solution
+              ✨ Calculate Solution
             </button>
           </div>
         </div>

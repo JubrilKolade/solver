@@ -3,6 +3,8 @@ import { solveProblem, type Solution } from '../utils/mathSolver';
 import { cn } from '../utils/cn';
 import { ArrowRightIcon } from './Icons';
 import { SolutionContent, EmptyState, LoadingState } from './SolutionCard';
+import { MathKeyboard } from './MathKeyboard';
+import { ShareSolution } from './ShareSolution';
 import type { Tab } from './NavBar';
 
 interface SolverTabProps {
@@ -67,6 +69,39 @@ export function SolverTab({ solution, setSolution, input, setInput, addToHistory
     }, 500);
   };
 
+  const handleKeyboardInsert = (text: string) => {
+    const el = inputRef.current;
+    if (!el) {
+      setInput(input + text);
+      return;
+    }
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+    const newVal = input.slice(0, start) + text + input.slice(end);
+    setInput(newVal);
+    setTimeout(() => {
+      el.focus();
+      el.selectionStart = el.selectionEnd = start + text.length;
+    }, 0);
+  };
+
+  const handleKeyboardBackspace = () => {
+    const el = inputRef.current;
+    if (!el) {
+      setInput(input.slice(0, -1));
+      return;
+    }
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+    if (start === end && start > 0) {
+      setInput(input.slice(0, start - 1) + input.slice(end));
+      setTimeout(() => { el.focus(); el.selectionStart = el.selectionEnd = start - 1; }, 0);
+    } else if (start !== end) {
+      setInput(input.slice(0, start) + input.slice(end));
+      setTimeout(() => { el.focus(); el.selectionStart = el.selectionEnd = start; }, 0);
+    }
+  };
+
   return (
     <div className="animate-fade-in-up">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
@@ -101,6 +136,13 @@ export function SolverTab({ solution, setSolution, input, setInput, addToHistory
               e.currentTarget.style.borderColor = 'var(--border-color)';
               e.currentTarget.style.boxShadow = 'none';
             }}
+          />
+
+          {/* Math Keyboard */}
+          <MathKeyboard
+            onInsert={handleKeyboardInsert}
+            onBackspace={handleKeyboardBackspace}
+            onClear={() => setInput('')}
           />
 
           {/* Solve Button */}
@@ -162,7 +204,7 @@ export function SolverTab({ solution, setSolution, input, setInput, addToHistory
           </div>
 
           {/* Quick Links to other tabs */}
-          <div className="mt-4 flex gap-2">
+          <div className="mt-4 flex gap-2 flex-wrap">
             <button
               onClick={() => onTabChange('upload')}
               className="text-xs px-3 py-1.5 rounded-full font-body transition-all flex items-center gap-1 border"
@@ -177,12 +219,26 @@ export function SolverTab({ solution, setSolution, input, setInput, addToHistory
             >
               📐 Geometry Tools
             </button>
+            <button
+              onClick={() => onTabChange('draw')}
+              className="text-xs px-3 py-1.5 rounded-full font-body transition-all flex items-center gap-1 border"
+              style={{ background: 'var(--accent-glow)', color: 'var(--accent)', borderColor: 'var(--border-accent)' }}
+            >
+              ✍️ Draw Problem
+            </button>
           </div>
         </div>
 
         {/* ─── RIGHT CARD: Solution ─── */}
         <div ref={solutionRef} className={cn(solution ? 'glass-card-glow' : 'glass-card')} style={{ minHeight: '300px' }}>
           <div className="p-6 sm:p-8">
+            {/* Share button if solution exists */}
+            {solution && solution.success && !isLoading && (
+              <div className="flex justify-end mb-2">
+                <ShareSolution solution={solution} />
+              </div>
+            )}
+
             {!solution && !isLoading && (
               <EmptyState
                 emoji="💡"
