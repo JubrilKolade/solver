@@ -1,4 +1,4 @@
-# MathSolver 🧮
+# Solver 🧮
 
 A comprehensive web-based math problem solver with support for arithmetic, algebra, calculus, geometry, and college-level mathematics. Powered by React, TypeScript, and MathJS with OCR capabilities for solving problems from images.
 
