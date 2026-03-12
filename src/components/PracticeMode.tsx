@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { solveProblem, type Solution } from '../utils/mathSolver';
+import * as fb from '../services/firebaseService';
 
 interface PracticeModeProps {
   onXPGain: (xp: number) => void;
@@ -203,6 +204,8 @@ export function PracticeMode({ onXPGain, onProblemSolved }: PracticeModeProps) {
         onXPGain(xp);
         onProblemSolved(currentQ.topic, true);
         setScore(s => ({ correct: s.correct + 1, total: s.total + 1, streak: s.streak + 1 }));
+        // Save to Firebase
+        fb.updateWeeklyActivity();
       } else {
         setShowResult('wrong');
         onProblemSolved(currentQ.topic, false);
