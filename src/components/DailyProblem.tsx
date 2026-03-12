@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { solveProblem, type Solution } from '../utils/mathSolver';
+import * as fb from '../services/firebaseService';
 
 interface DailyProblemProps {
   onXPGain: (xp: number) => void;
@@ -47,11 +48,6 @@ function getDailyProblem(): typeof dailyProblems[0] {
   return dailyProblems[dayOfYear % dailyProblems.length];
 }
 
-function getDailyKey(): string {
-  const today = new Date();
-  return `daily_${today.getFullYear()}_${today.getMonth()}_${today.getDate()}`;
-}
-
 export function DailyProblem({ onXPGain, onSolve }: DailyProblemProps) {
   const { isDark } = useTheme();
   const [dailyQ] = useState(getDailyProblem());
@@ -60,17 +56,24 @@ export function DailyProblem({ onXPGain, onSolve }: DailyProblemProps) {
   const [showResult, setShowResult] = useState<'correct' | 'wrong' | null>(null);
   const [solution, setSolution] = useState<Solution | null>(null);
   const [dailyStreak, setDailyStreak] = useState(0);
+  const [loading, setLoading] = useState(true);
 
+  // Load daily status from Firebase
   useEffect(() => {
-    const key = getDailyKey();
-    const done = localStorage.getItem(key);
-    if (done === 'true') setCompleted(true);
-
-    const streak = parseInt(localStorage.getItem('daily_streak') || '0');
-    setDailyStreak(streak);
+    async function loadDailyStatus() {
+      try {
+        const status = await fb.getDailyStatus();
+        setCompleted(status.completed);
+        setDailyStreak(status.streak);
+      } catch (e) {
+        console.error('Failed to load daily status:', e);
+      }
+      setLoading(false);
+    }
+    loadDailyStatus();
   }, []);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const sol = solveProblem(dailyQ.q);
     setSolution(sol);
 
@@ -84,19 +87,22 @@ export function DailyProblem({ onXPGain, onSolve }: DailyProblemProps) {
 
       if (isCorrect) {
         setShowResult('correct');
-        onXPGain(75); // bonus XP for daily
+        onXPGain(75);
         const newStreak = dailyStreak + 1;
         setDailyStreak(newStreak);
-        localStorage.setItem('daily_streak', newStreak.toString());
+        // Save to Firebase
+        await fb.saveDailyCompletion(newStreak);
       } else {
         setShowResult('wrong');
+        // Still mark as completed even if wrong
+        await fb.saveDailyCompletion(0); // Reset streak on wrong
       }
     } else {
       setShowResult('wrong');
+      await fb.saveDailyCompletion(0);
     }
 
     setCompleted(true);
-    localStorage.setItem(getDailyKey(), 'true');
   };
 
   const handleShowInSolver = () => {
@@ -108,6 +114,17 @@ export function DailyProblem({ onXPGain, onSolve }: DailyProblemProps) {
   const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
   const hoursLeft = Math.floor((tomorrow.getTime() - now.getTime()) / 3600000);
   const minsLeft = Math.floor(((tomorrow.getTime() - now.getTime()) % 3600000) / 60000);
+
+  if (loading) {
+    return (
+      <div className="animate-fade-in-up">
+        <div className="glass-card p-12 text-center">
+          <div className="text-4xl mb-4 animate-bounce">🔔</div>
+          <p className="font-display" style={{ color: 'var(--text-muted)' }}>Loading daily challenge...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="animate-fade-in-up">
