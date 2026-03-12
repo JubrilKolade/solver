@@ -1,28 +1,9 @@
 import { useTheme } from '../contexts/ThemeContext';
+import type { UserStats } from '../services/firebaseService';
 
-export interface UserStats {
-  totalSolved: number;
-  totalCorrect: number;
-  currentStreak: number;
-  bestStreak: number;
-  totalXP: number;
-  topicStats: Record<string, { solved: number; correct: number }>;
-  weeklyActivity: number[];
-  recentProblems: { problem: string; time: number; correct: boolean }[];
-  badges: string[];
-}
-
-export const defaultStats: UserStats = {
-  totalSolved: 0,
-  totalCorrect: 0,
-  currentStreak: 0,
-  bestStreak: 0,
-  totalXP: 0,
-  topicStats: {},
-  weeklyActivity: [0, 0, 0, 0, 0, 0, 0],
-  recentProblems: [],
-  badges: [],
-};
+// Re-export for backward compatibility
+export type { UserStats } from '../services/firebaseService';
+export { defaultStats } from '../services/firebaseService';
 
 const levels = [
   { name: 'Beginner', emoji: '🌱', xp: 0 },
@@ -94,13 +75,18 @@ export function Dashboard({ stats, onResetStats }: DashboardProps) {
       <div className="glass-card p-6 sm:p-8">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-2xl font-display" style={{ color: 'var(--text-primary)' }}>📊 Dashboard</h2>
-          <button
-            onClick={onResetStats}
-            className="text-xs px-3 py-1.5 rounded-lg transition-all hover:scale-105"
-            style={{ background: 'rgba(239,68,68,0.1)', color: '#ef4444' }}
-          >
-            Reset
-          </button>
+          <div className="flex items-center gap-2">
+            <span className="text-xs px-2 py-1 rounded-full" style={{ background: 'rgba(34,197,94,0.1)', color: '#22c55e' }}>
+              ☁️ Synced
+            </span>
+            <button
+              onClick={onResetStats}
+              className="text-xs px-3 py-1.5 rounded-lg transition-all hover:scale-105"
+              style={{ background: 'rgba(239,68,68,0.1)', color: '#ef4444' }}
+            >
+              Reset
+            </button>
+          </div>
         </div>
 
         {/* Level card */}
