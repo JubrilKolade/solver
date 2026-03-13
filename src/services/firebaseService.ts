@@ -1,4 +1,4 @@
-import { database, auth, signInAnonymousUser } from '../firebase';
+import { database, auth, signInAnonymousUser } from '../utils/firebase';
 import { ref, set, get, push, remove, onValue, off } from 'firebase/database';
 import { onAuthStateChanged } from 'firebase/auth';
 
