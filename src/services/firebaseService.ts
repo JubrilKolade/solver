@@ -1,7 +1,6 @@
 import { database, auth, signInAnonymousUser } from '../utils/firebase';
 import { ref, set, get, push, remove, onValue, off } from 'firebase/database';
 import { onAuthStateChanged } from 'firebase/auth';
-
 // ─── Types ────────────────────────────────────────────────────────────
 export interface UserStats {
   totalSolved: number;
