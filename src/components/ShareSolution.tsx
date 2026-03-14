@@ -36,11 +36,11 @@ export function ShareSolution({ solution }: ShareSolutionProps) {
   };
 
   const shareNative = async () => {
-    const text = `Problem: ${solution.problem}\nAnswer: ${solution.result}\n\nSolved with MathPlayground 🧮`;
+    const text = `Problem: ${solution.problem}\nAnswer: ${solution.result}\n\nSolved with Solver 🧮`;
     
     if (navigator.share) {
       try {
-        await navigator.share({ title: 'MathPlayground Solution', text });
+        await navigator.share({ title: 'Solver Solution', text });
         showToast('✅ Shared!');
       } catch {
         copyText();
@@ -59,7 +59,7 @@ export function ShareSolution({ solution }: ShareSolutionProps) {
         category: solution.category,
         time: Date.now(),
       });
-      showToast('🔖 Bookmarked to cloud!');
+      showToast('🔖 Bookmarked!');
     } catch {
       showToast('❌ Failed to bookmark');
     }
@@ -69,7 +69,7 @@ export function ShareSolution({ solution }: ShareSolutionProps) {
   const exportFile = () => {
     const content = [
       '╔══════════════════════════════════════╗',
-      '║     MathPlayground - Solution        ║',
+      '║     Solver - Solution        ║',
       '╚══════════════════════════════════════╝',
       '',
       `📌 Problem: ${solution.problem}`,
@@ -81,14 +81,14 @@ export function ShareSolution({ solution }: ShareSolutionProps) {
       ...solution.steps.map((s, i) => `Step ${i + 1}: ${s.description}\n   → ${s.expression}\n`),
       '',
       `Date: ${new Date().toLocaleString()}`,
-      'Solved with MathPlayground 🧮',
+      'Solved with Solver🧮',
     ].join('\n');
 
     const blob = new Blob([content], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `mathplayground_${solution.problem.slice(0, 30).replace(/[^a-zA-Z0-9]/g, '_')}.txt`;
+    a.download = `solver_${solution.problem.slice(0, 30).replace(/[^a-zA-Z0-9]/g, '_')}.txt`;
     a.click();
     URL.revokeObjectURL(url);
     showToast('📄 Downloaded!');
