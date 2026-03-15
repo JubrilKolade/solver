@@ -85,7 +85,8 @@ export const DEFAULT_SHORTCUTS: KeyboardShortcut[] = [
     ctrlKey: true,
     description: 'Export/Save solution',
     action: () => {
-      const shareBtn = document.querySelector('button:has(span:contains("Share"))') as HTMLButtonElement;
+      const shareBtn = document.querySelector('button:contains(Share)') as HTMLButtonElement ||
+                       Array.from(document.querySelectorAll('button')).find(btn => btn.textContent?.includes('Share')) as HTMLButtonElement;
       shareBtn?.click();
     },
   },
