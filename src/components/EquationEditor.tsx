@@ -60,7 +60,7 @@ export function EquationEditor({ onEquationChange, initialEquation = '' }: Equat
       </h3>
 
       {/* Display */}
-      <div className="bg-white/[0.03] rounded-lg p-4 mb-4 min-h-12 font-mono text-indigo-300 text-lg break-words">
+      <div className="bg-white/3 rounded-lg p-4 mb-4 min-h-12 font-mono text-indigo-300 text-lg break-words">
         {equation || 'Type or click symbols...'}
       </div>
 
