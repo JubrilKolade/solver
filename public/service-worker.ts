@@ -1,12 +1,9 @@
 /// <reference lib="webworker" />
 
-declare const self: ServiceWorkerGlobalScope;
-
 const CACHE_NAME = 'mathsolver-v1';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
-  '/manifest.json',
 ];
 
 /**
@@ -14,16 +11,16 @@ const ASSETS_TO_CACHE = [
  * Caches app shell and recent solutions
  */
 
-self.addEventListener('install', (event) => {
+(self as any).addEventListener('install', (event: any) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(ASSETS_TO_CACHE);
     })
   );
-  self.skipWaiting();
+  (self as any).skipWaiting();
 });
 
-self.addEventListener('activate', (event) => {
+(self as any).addEventListener('activate', (event: any) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
@@ -33,65 +30,65 @@ self.addEventListener('activate', (event) => {
       );
     })
   );
-  self.clients.claim();
+  (self as any).clients.claim();
 });
 
-self.addEventListener('fetch', (event) => {
-  const { request } = event;
+(self as any).addEventListener('fetch', (event: any) => {
+  const { request } = event as any;
 
   // Skip non-GET requests
-  if (request.method !== 'GET') return;
+  if (request.method !== 'GET') {
+    return;
+  }
 
   // For API requests, use network-first strategy
   if (request.url.includes('/api/') || request.url.includes('firebase')) {
     event.respondWith(
-      fetch(request)
-        .then((response) => {
+      (async () => {
+        try {
+          const response = await fetch(request);
           // Cache successful responses
           if (response.ok) {
-            const clone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(request, clone);
-            });
+            const cache = await caches.open(CACHE_NAME);
+            cache.put(request, response.clone());
           }
           return response;
-        })
-        .catch(() => {
+        } catch (error) {
           // Return cached version on network error
-          return caches.match(request);
-        })
+          const cached = await caches.match(request);
+          if (cached) return cached;
+          throw error;
+        }
+      })()
     );
     return;
   }
 
   // For other requests, use cache-first strategy
   event.respondWith(
-    caches.match(request).then((response) => {
-      if (response) return response;
+    (async () => {
+      const cached = await caches.match(request);
+      if (cached) return cached;
 
-      return fetch(request)
-        .then((response) => {
-          if (!response || response.status !== 200 || response.type !== 'basic') {
-            return response;
-          }
-
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, clone);
-          });
-
+      try {
+        const response = await fetch(request);
+        if (!response || response.status !== 200 || response.type !== 'basic') {
           return response;
-        })
-        .catch(() => {
-          // Return 404 page or offline page
-          return new Response('Offline - Page not available', {
-            status: 503,
-            statusText: 'Service Unavailable',
-            headers: new Headers({ 'Content-Type': 'text/plain' }),
-          });
+        }
+
+        const cache = await caches.open(CACHE_NAME);
+        cache.put(request, response.clone());
+        return response;
+      } catch (error) {
+        // Return offline message
+        return new Response('Offline - Page not available', {
+          status: 503,
+          statusText: 'Service Unavailable',
+          headers: new Headers({ 'Content-Type': 'text/plain' }),
         });
-    })
+      }
+    })()
   );
 });
 
-export {};
+
