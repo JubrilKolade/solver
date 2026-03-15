@@ -1,5 +1,40 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 
+// Add SpeechRecognition type definition for TypeScript
+interface SpeechRecognition extends EventTarget {
+  start(): void;
+  stop(): void;
+  abort(): void;
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  language: string;
+  onstart: ((this: SpeechRecognition, ev: Event) => any) | null;
+  onresult: ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => any) | null;
+  onerror: ((this: SpeechRecognition, ev: SpeechRecognitionErrorEvent) => any) | null;
+  onend: ((this: SpeechRecognition, ev: Event) => any) | null;
+}
+interface SpeechRecognitionEvent extends Event {
+  resultIndex: number;
+  results: SpeechRecognitionResultList;
+}
+interface SpeechRecognitionResultList {
+  length: number;
+  [index: number]: SpeechRecognitionResult;
+}
+interface SpeechRecognitionResult {
+  length: number;
+  isFinal: boolean;
+  [index: number]: SpeechRecognitionAlternative;
+}
+interface SpeechRecognitionAlternative {
+  transcript: string;
+  confidence: number;
+}
+interface SpeechRecognitionErrorEvent extends Event {
+  error: string;
+}
+
 /**
  * Hook for voice input - convert speech to text
  * Uses Web Speech API for math problem recognition
@@ -18,7 +53,7 @@ export function useVoiceInput(options: VoiceInputOptions = {}) {
   const recognitionRef = useRef<SpeechRecognition | null>(null);
 
   useEffect(() => {
-    const SpeechRecognition = window.SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
       setError('Voice input not supported in this browser');
@@ -28,7 +63,7 @@ export function useVoiceInput(options: VoiceInputOptions = {}) {
     const recognition = new SpeechRecognition();
     recognition.continuous = options.continuous || false;
     recognition.interimResults = true;
-    recognition.language = options.language || 'en-US';
+    (recognition as any).lang = options.language || 'en-US';
 
     recognition.onstart = () => {
       setIsListening(true);
@@ -36,7 +71,7 @@ export function useVoiceInput(options: VoiceInputOptions = {}) {
       setTranscript('');
     };
 
-    recognition.onresult = (event) => {
+    recognition.onresult = (event: any) => {
       let interimTranscript = '';
 
       for (let i = event.resultIndex; i < event.results.length; i++) {
@@ -52,7 +87,7 @@ export function useVoiceInput(options: VoiceInputOptions = {}) {
       setTranscript(interimTranscript);
     };
 
-    recognition.onerror = (event) => {
+    recognition.onerror = (event: any) => {
       setError(`Voice recognition error: ${event.error}`);
       setIsListening(false);
     };
