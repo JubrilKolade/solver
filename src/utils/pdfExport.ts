@@ -95,10 +95,10 @@ export async function exportSolutionToPDF(
 
         // Expression
         doc.setTextColor(100, 100, 100);
-        doc.setFont(undefined, 'italic');
+        doc.setFont('helvetica', 'italic');
         const exprLines = doc.splitTextToSize(step.expression, 170);
         doc.text(exprLines, margin + 10, yOffset);
-        doc.setFont(undefined, 'normal');
+        doc.setFont('helvetica', 'normal');
         yOffset += exprLines.length * 4 + 6;
       });
     }
