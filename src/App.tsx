@@ -19,6 +19,13 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import * as fb from './services/firebaseService';
 import type { UserStats } from './services/firebaseService';
 
+// ─── NEW FEATURES ───────────────────────────────────────────────────
+import { ErrorBoundary } from './components/ErrorBoundary';
+import { useKeyboardShortcuts, DEFAULT_SHORTCUTS } from './hooks/useKeyboardShortcuts';
+import { registerServiceWorker, isOnline } from './utils/offline';
+import { getUnlockedAchievements, getNewAchievements, calculateXP } from './utils/achievements';
+import { calculateInsights, detectPatterns } from './utils/analytics';
+
 function AppContent() {
   const [input, setInput] = useState('');
   const [solution, setSolution] = useState<Solution | null>(null);
@@ -27,6 +34,10 @@ function AppContent() {
   const [stats, setStats] = useState<UserStats>(fb.defaultStats);
   const [dailyAvailable, setDailyAvailable] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  
+  // ─── NEW: Offline & Achievements ─────────────────────────────────
+  const [isOnlineStatus, setIsOnlineStatus] = useState(true);
+  const [unlockedAchievements, setUnlockedAchievements] = useState<string[]>([]);
 
   // Load everything from Firebase on mount
   useEffect(() => {
@@ -40,12 +51,22 @@ function AppContent() {
         setStats(savedStats);
         setHistory(savedHistory);
         setDailyAvailable(!dailyStatus.completed);
+        
+        // Load unlocked achievements
+        const achievements = getUnlockedAchievements(savedStats);
+        setUnlockedAchievements(achievements);
       } catch (e) {
         console.error('Failed to load from Firebase:', e);
       }
       setLoaded(true);
     }
     loadData();
+    
+    // Register Service Worker for offline support
+    registerServiceWorker();
+    
+    // Check online status
+    isOnline().then(online => setIsOnlineStatus(online));
   }, []);
 
   // Check daily availability when switching tabs
@@ -54,6 +75,9 @@ function AppContent() {
       fb.getDailyStatus().then(s => setDailyAvailable(!s.completed));
     }
   }, [activeTab]);
+  
+  // ─── NEW: Setup keyboard shortcuts ─────────────────────────────────
+  useKeyboardShortcuts(DEFAULT_SHORTCUTS);
 
   // Save stats to Firebase whenever they change
   useEffect(() => {
@@ -74,6 +98,19 @@ function AppContent() {
     // Save to Firebase
     fb.saveToHistory(item);
     fb.updateWeeklyActivity();
+    
+    // ─── NEW: Track analytics & achievements ─────────────────────────
+    // Record solution attempt for analytics
+    const xpGain = calculateXP(sol.category, sol.success ? 'solve' : 'attempt');
+    
+    // Check for achievement unlocks
+    const newAchievements = checkAchievements(stats, sol.category);
+    if (newAchievements.length > 0) {
+      setUnlockedAchievements(prev => [...prev, ...newAchievements]);
+      newAchievements.forEach(ach => {
+        console.log(`🏆 Achievement Unlocked: ${ach}`);
+      });
+    }
 
     // Update local state
     setHistory((prev) => [item, ...prev.slice(0, 49)]);
@@ -85,6 +122,7 @@ function AppContent() {
       return {
         ...prev,
         totalSolved: prev.totalSolved + 1,
+        totalXP: prev.totalXP + xpGain,
         weeklyActivity: weekly,
         recentProblems: [
           { problem: sol.problem, time: Date.now(), correct: true },
@@ -92,7 +130,7 @@ function AppContent() {
         ],
       };
     });
-  }, []);
+  }, [stats]);
 
   const handleExampleClick = useCallback((problem: string) => {
     setInput(problem);
@@ -215,6 +253,37 @@ function AppContent() {
       if (result.success) addToHistory(result);
     }, 100);
   }, [addToHistory]);
+  
+  // ─── NEW: Achievement checker ────────────────────────────────────
+  const checkAchievements = (currentStats: UserStats, category: string): string[] => {
+    const unlocked: string[] = [];
+    
+    // First Step Achievement
+    if (currentStats.totalSolved === 1 && !unlockedAchievements.includes('first_step')) {
+      unlocked.push('first_step');
+    }
+    
+    // Math Master (50+ solves)
+    if (currentStats.totalSolved >= 50 && !unlockedAchievements.includes('math_master')) {
+      unlocked.push('math_master');
+    }
+    
+    // Perfect Week (7+ daily solves)
+    const weekTotal = currentStats.weeklyActivity.reduce((a, b) => a + b, 0);
+    if (weekTotal >= 7 && !unlockedAchievements.includes('perfect_week')) {
+      unlocked.push('perfect_week');
+    }
+    
+    // Category Expert (20+ in category)
+    const categoryCount = currentStats.recentProblems
+      .filter(p => p.correct)
+      .length;
+    if (categoryCount >= 20 && !unlockedAchievements.includes('category_expert')) {
+      unlocked.push('category_expert');
+    }
+    
+    return unlocked;
+  };
 
   // ─── Render ─────────────────────────────────────────────────────────
   return (
@@ -222,7 +291,22 @@ function AppContent() {
       <BackgroundOrbs />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
-        <Header />
+        {/* ─── NEW: Offline Status Bar ─── */}
+        {!isOnlineStatus && (
+          <div className="mb-4 p-3 bg-yellow-900/20 border border-yellow-700/50 rounded-lg flex items-center gap-2 text-yellow-300 text-sm">
+            <span className="animate-pulse">●</span>
+            Offline Mode - Using cached data
+          </div>
+        )}
+        
+        {/* ─── NEW: Achievements Notification ─── */}
+        {unlockedAchievements.length > 0 && (
+          <div className="mb-4 p-3 bg-indigo-900/20 border border-indigo-700/50 rounded-lg flex items-center gap-2 text-indigo-300 text-sm">
+            <span>🏆</span>
+            {unlockedAchievements.length} Achievement{unlockedAchievements.length !== 1 ? 's' : ''} Unlocked!
+          </div>
+        )}
+                <Header />
 
         <NavBar
           activeTab={activeTab}
@@ -317,8 +401,10 @@ function AppContent() {
 
 export function App() {
   return (
-    <ThemeProvider>
-      <AppContent />
-    </ThemeProvider>
+    <ErrorBoundary>
+      <ThemeProvider>
+        <AppContent />
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 }
