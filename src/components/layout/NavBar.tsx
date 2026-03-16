@@ -1,7 +1,7 @@
 import { cn } from '../../utils/cn';
 import { useTheme } from '../../contexts/ThemeContext';
 
-export type Tab = 'solver' | 'upload' | 'geometry' | 'draw' | 'practice' | 'dashboard' | 'theory' | 'collab' | 'daily' | 'examples' | 'history';
+export type Tab = 'solver' | 'upload' | 'geometry' | 'draw' | 'practice' | 'dashboard' | 'theory' | 'collab' | 'daily' | 'examples' | 'history' | 'auth' | 'settings';
 
 interface NavBarProps {
   activeTab: Tab;
@@ -22,6 +22,8 @@ const tabs: { id: Tab; label: string; emoji: string }[] = [
   { id: 'daily', label: 'Daily', emoji: '🔔' },
   { id: 'examples', label: 'Examples', emoji: '📚' },
   { id: 'history', label: 'History', emoji: '🕐' },
+  { id: 'auth', label: 'Account', emoji: '🔑' },
+  { id: 'settings', label: 'Settings', emoji: '⚙️' },
 ];
 
 export function NavBar({ activeTab, onTabChange, historyCount, dailyAvailable }: NavBarProps) {
