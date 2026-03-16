@@ -1,4 +1,5 @@
 import { useTheme } from '../../contexts/ThemeContext';
+import { AuthStatus } from '../AuthStatus';
 
 export function Header() {
   const { isDark, toggleTheme } = useTheme();
@@ -20,25 +21,29 @@ export function Header() {
         </div>
       </div>
 
-      {/* Theme Toggle */}
-      <button
-        onClick={toggleTheme}
-        className="theme-toggle flex items-center border"
-        style={{
-          background: isDark ? 'rgba(163,230,53,0.15)' : 'rgba(0,0,0,0.06)',
-          borderColor: isDark ? 'rgba(163,230,53,0.3)' : 'rgba(0,0,0,0.1)',
-        }}
-      >
-        <div
-          className="toggle-thumb"
+      {/* Theme Toggle & Auth */}
+      <div className="flex items-center gap-4">
+        <AuthStatus />
+        
+        <button
+          onClick={toggleTheme}
+          className="theme-toggle flex items-center border"
           style={{
-            background: isDark ? '#a3e635' : '#fff',
-            boxShadow: isDark ? '0 0 10px rgba(163,230,53,0.5)' : '0 2px 6px rgba(0,0,0,0.15)',
+            background: isDark ? 'rgba(163,230,53,0.15)' : 'rgba(0,0,0,0.06)',
+            borderColor: isDark ? 'rgba(163,230,53,0.3)' : 'rgba(0,0,0,0.1)',
           }}
         >
-          {isDark ? '🌙' : '☀️'}
-        </div>
-      </button>
+          <div
+            className="toggle-thumb"
+            style={{
+              background: isDark ? '#a3e635' : '#fff',
+              boxShadow: isDark ? '0 0 10px rgba(163,230,53,0.5)' : '0 2px 6px rgba(0,0,0,0.15)',
+            }}
+          >
+            {isDark ? '🌙' : '☀️'}
+          </div>
+        </button>
+      </div>
     </header>
   );
 }
