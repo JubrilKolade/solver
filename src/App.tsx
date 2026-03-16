@@ -15,7 +15,11 @@ import { Dashboard } from './components/tabs/Dashboard';
 import { TheoryCards } from './components/tabs/TheoryCards';
 import { CollabMode } from './components/tabs/CollabMode';
 import { DailyProblem } from './components/tabs/DailyProblem';
+import { LoginSignupTab } from './components/tabs/LoginSignupTab';
+import { SettingsTab } from './components/tabs/SettingsTab';
+import { SignupPromptModal } from './components/SignupPromptModal';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { AuthProvider } from './contexts/AuthContext';
 import * as fb from './services/firebaseService';
 import type { UserStats } from './services/firebaseService';
 
@@ -23,10 +27,11 @@ import type { UserStats } from './services/firebaseService';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { useKeyboardShortcuts, DEFAULT_SHORTCUTS } from './hooks/useKeyboardShortcuts';
 import { registerServiceWorker, isOnline } from './utils/offline';
-import { getUnlockedAchievements, getNewAchievements, calculateXP } from './utils/achievements';
-import { calculateInsights, detectPatterns } from './utils/analytics';
+import { getUnlockedAchievements } from './utils/achievements';
+import { useAuth } from './hooks/useAuth';
 
 function AppContent() {
+  const { isAnonymous } = useAuth();
   const [input, setInput] = useState('');
   const [solution, setSolution] = useState<Solution | null>(null);
   const [history, setHistory] = useState<fb.HistoryItem[]>([]);
@@ -38,6 +43,8 @@ function AppContent() {
   // ─── NEW: Offline & Achievements ─────────────────────────────────
   const [isOnlineStatus, setIsOnlineStatus] = useState(true);
   const [unlockedAchievements, setUnlockedAchievements] = useState<string[]>([]);
+  const [showSignupPrompt, setShowSignupPrompt] = useState(false);
+  const [signupPromptFeature, setSignupPromptFeature] = useState('this feature');
 
   // Load everything from Firebase on mount
   useEffect(() => {
@@ -66,7 +73,7 @@ function AppContent() {
     registerServiceWorker();
     
     // Check online status
-    isOnline().then(online => setIsOnlineStatus(online));
+    setIsOnlineStatus(isOnline());
   }, []);
 
   // Check daily availability when switching tabs
@@ -74,7 +81,19 @@ function AppContent() {
     if (activeTab === 'daily') {
       fb.getDailyStatus().then(s => setDailyAvailable(!s.completed));
     }
-  }, [activeTab]);
+
+    // Prompt for signup when accessing premium features as anonymous
+    const premiumFeatures: Record<string, string> = {
+      'collab': 'collaboration',
+      'settings': 'account settings',
+      'dashboard': 'that feature',
+    };
+
+    if (isAnonymous && premiumFeatures[activeTab]) {
+      setSignupPromptFeature(premiumFeatures[activeTab]);
+      setShowSignupPrompt(true);
+    }
+  }, [activeTab, isAnonymous]);
   
   // ─── NEW: Setup keyboard shortcuts ─────────────────────────────────
   useKeyboardShortcuts(DEFAULT_SHORTCUTS);
@@ -255,7 +274,7 @@ function AppContent() {
   }, [addToHistory]);
   
   // ─── NEW: Achievement checker ────────────────────────────────────
-  const checkAchievements = (currentStats: UserStats, category: string): string[] => {
+  const checkAchievements = (currentStats: UserStats): string[] => {
     const unlocked: string[] = [];
     
     // First Step Achievement
@@ -393,8 +412,24 @@ function AppContent() {
           />
         )}
 
+        {activeTab === 'auth' && (
+          <LoginSignupTab />
+        )}
+
+        {activeTab === 'settings' && (
+          <SettingsTab />
+        )}
+
         <Footer />
       </div>
+
+      {/* Signup Prompt Modal */}
+      <SignupPromptModal
+        isOpen={showSignupPrompt}
+        onClose={() => setShowSignupPrompt(false)}
+        feature={signupPromptFeature}
+        onSignUp={() => setActiveTab('auth')}
+      />
     </div>
   );
 }
@@ -402,9 +437,11 @@ function AppContent() {
 export function App() {
   return (
     <ErrorBoundary>
-      <ThemeProvider>
-        <AppContent />
-      </ThemeProvider>
+      <AuthProvider>
+        <ThemeProvider>
+          <AppContent />
+        </ThemeProvider>
+      </AuthProvider>
     </ErrorBoundary>
   );
 }
