@@ -309,3 +309,66 @@ export async function updateWeeklyActivity(): Promise<void> {
     console.error('Failed to update weekly activity:', e);
   }
 }
+
+// ─── User Profile ────────────────────────────────────────────────────
+export interface UserProfileData {
+  uid: string;
+  email: string | null;
+  displayName: string | null;
+  bio?: string;
+  theme?: 'light' | 'dark' | 'auto';
+  notifications?: {
+    dailyReminder: boolean;
+    achievements: boolean;
+  };
+  privacy?: {
+    shareStats: boolean;
+    shareOnLeaderboard: boolean;
+  };
+}
+
+export async function saveUserProfile(profile: Partial<UserProfileData>): Promise<void> {
+  const uid = await ensureAuth();
+  if (!uid) return;
+  
+  try {
+    const profileRef = userRef('profile');
+    const existing = await get(profileRef);
+    const current = existing.exists() ? existing.val() : {};
+    
+    await set(profileRef, {
+      ...current,
+      ...profile,
+      updatedAt: Date.now(),
+    });
+  } catch (e) {
+    console.error('Failed to save profile:', e);
+  }
+}
+
+export async function getUserProfile(): Promise<UserProfileData | null> {
+  const uid = await ensureAuth();
+  if (!uid) return null;
+  
+  try {
+    const snapshot = await get(userRef('profile'));
+    if (snapshot.exists()) {
+      return snapshot.val();
+    }
+  } catch (e) {
+    console.error('Failed to load profile:', e);
+  }
+  return null;
+}
+
+export async function deleteUserData(): Promise<void> {
+  const uid = await ensureAuth();
+  if (!uid) return;
+  
+  try {
+    // Delete all user data from realtime database
+    await remove(ref(database, `users/${uid}`));
+  } catch (e) {
+    console.error('Failed to delete user data:', e);
+  }
+}
