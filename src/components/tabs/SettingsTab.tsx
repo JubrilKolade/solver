@@ -13,13 +13,11 @@ export function SettingsTab() {
   const [success, setSuccess] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [profileData, setProfileData] = useState<fb.UserProfileData | null>(null);
 
   // Load profile data on mount
   useEffect(() => {
     async function loadProfile() {
       const data = await fb.getUserProfile();
-      setProfileData(data);
       if (data?.displayName) setDisplayName(data.displayName);
       if (data?.bio) setBio(data.bio);
     }
@@ -104,7 +102,7 @@ export function SettingsTab() {
 
       {error && (
         <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex gap-3">
-          <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+          <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
           <div>
             <p className="text-sm font-medium text-red-800 dark:text-red-300">{error}</p>
             <button
@@ -119,7 +117,7 @@ export function SettingsTab() {
 
       {success && (
         <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg flex gap-3">
-          <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+          <CheckCircle className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
           <p className="text-sm text-green-800 dark:text-green-300">{success}</p>
         </div>
       )}
