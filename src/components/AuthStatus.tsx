@@ -54,7 +54,7 @@ export function AuthStatus() {
         className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition"
         title={isAnonymous ? 'Anonymous User' : displayName}
       >
-        <div className="w-8 h-8 rounded-full bg-linear-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white text-xs font-bold">
+        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white text-xs font-bold">
           {profile?.photoURL ? (
             <img src={profile.photoURL} alt={displayName} className="w-full h-full rounded-full object-cover" />
           ) : (
