@@ -27,7 +27,6 @@ import type { UserStats } from './services/firebaseService';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { useKeyboardShortcuts, DEFAULT_SHORTCUTS } from './hooks/useKeyboardShortcuts';
 import { registerServiceWorker, isOnline } from './utils/offline';
-import { getUnlockedAchievements } from './utils/achievements';
 import { useAuth } from './hooks/useAuth';
 
 function AppContent() {
@@ -58,10 +57,6 @@ function AppContent() {
         setStats(savedStats);
         setHistory(savedHistory);
         setDailyAvailable(!dailyStatus.completed);
-        
-        // Load unlocked achievements
-        const achievements = getUnlockedAchievements(savedStats);
-        setUnlockedAchievements(achievements);
       } catch (e) {
         console.error('Failed to load from Firebase:', e);
       }
@@ -119,11 +114,8 @@ function AppContent() {
     fb.updateWeeklyActivity();
     
     // ─── NEW: Track analytics & achievements ─────────────────────────
-    // Record solution attempt for analytics
-    const xpGain = calculateXP(sol.category, sol.success ? 'solve' : 'attempt');
-    
     // Check for achievement unlocks
-    const newAchievements = checkAchievements(stats, sol.category);
+    const newAchievements = checkAchievements(stats);
     if (newAchievements.length > 0) {
       setUnlockedAchievements(prev => [...prev, ...newAchievements]);
       newAchievements.forEach(ach => {
@@ -141,7 +133,7 @@ function AppContent() {
       return {
         ...prev,
         totalSolved: prev.totalSolved + 1,
-        totalXP: prev.totalXP + xpGain,
+        totalXP: prev.totalXP + 10,
         weeklyActivity: weekly,
         recentProblems: [
           { problem: sol.problem, time: Date.now(), correct: true },
