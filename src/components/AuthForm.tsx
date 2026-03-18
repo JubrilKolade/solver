@@ -50,7 +50,7 @@ export function AuthForm({
     setIsLoading(true);
     try {
       const result = await signUpWithEmail(email, password, displayName);
-      
+
       if (result.error) {
         setError(result.error);
       } else {
@@ -77,7 +77,7 @@ export function AuthForm({
     setIsLoading(true);
     try {
       const result = await signInWithEmail(email, password);
-      
+
       if (result.error) {
         setError(result.error);
       } else {
@@ -108,7 +108,7 @@ export function AuthForm({
     setIsLoading(true);
     try {
       const result = await sendResetEmail(email);
-      
+
       if (result.error) {
         setError(result.error);
       } else {
@@ -137,38 +137,44 @@ export function AuthForm({
   };
 
   return (
-    <div className="w-full max-w-md mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
-      <h2 className="text-2xl font-bold mb-6 text-center">
+    <div className="w-full max-w-md mx-auto glass-card p-6 sm:p-8">
+      <h2 className="text-2xl font-display mb-6 text-center" style={{ color: 'var(--text-primary)' }}>
         {currentMode === 'login' && 'Sign In'}
         {currentMode === 'signup' && 'Create Account'}
         {currentMode === 'reset' && 'Reset Password'}
       </h2>
 
       {error && (
-        <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex gap-2">
-          <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
-          <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
+        <div className="mb-4 p-3 border rounded-lg flex gap-2" style={{ background: 'rgba(239,68,68,0.1)', borderColor: 'rgba(239,68,68,0.3)' }}>
+          <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" style={{ color: '#ef4444' }} />
+          <p className="text-sm font-medium" style={{ color: '#ef4444' }}>{error}</p>
         </div>
       )}
 
       {success && (
-        <div className="mb-4 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-          <p className="text-sm text-green-700 dark:text-green-400">{success}</p>
+        <div className="mb-4 p-3 border rounded-lg" style={{ background: 'var(--success-glow)', borderColor: 'rgba(34,197,94,0.3)' }}>
+          <p className="text-sm font-medium" style={{ color: 'var(--success)' }}>{success}</p>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-5">
         {currentMode === 'signup' && (
           <div>
-            <label className="block text-sm font-medium mb-2">Full Name</label>
+            <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>Full Name</label>
             <div className="relative">
-              <User className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+              <User className="absolute left-3 top-3 w-5 h-5" style={{ color: 'var(--text-muted)' }} />
               <input
                 type="text"
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 placeholder="John Doe"
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition"
+                style={{
+                  background: 'var(--bg-input)',
+                  borderColor: 'var(--border-color)',
+                  color: 'var(--text-primary)',
+                  boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)'
+                }}
                 disabled={isLoading}
               />
             </div>
@@ -177,15 +183,21 @@ export function AuthForm({
 
         {(currentMode === 'login' || currentMode === 'signup') && (
           <div>
-            <label className="block text-sm font-medium mb-2">Email</label>
+            <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>Email</label>
             <div className="relative">
-              <Mail className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+              <Mail className="absolute left-3 top-3 w-5 h-5" style={{ color: 'var(--text-muted)' }} />
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition"
+                style={{
+                  background: 'var(--bg-input)',
+                  borderColor: 'var(--border-color)',
+                  color: 'var(--text-primary)',
+                  boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)'
+                }}
                 disabled={isLoading}
                 required
               />
@@ -195,18 +207,24 @@ export function AuthForm({
 
         {(currentMode === 'login' || currentMode === 'signup') && (
           <div>
-            <label className="block text-sm font-medium mb-2">
+            <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
               {currentMode === 'login' ? 'Password' : 'Password (6+ characters)'}
             </label>
             <div className="relative">
-              <Lock className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+              <Lock className="absolute left-3 top-3 w-5 h-5" style={{ color: 'var(--text-muted)' }} />
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 minLength={6}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition"
+                style={{
+                  background: 'var(--bg-input)',
+                  borderColor: 'var(--border-color)',
+                  color: 'var(--text-primary)',
+                  boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)'
+                }}
                 disabled={isLoading}
                 required
               />
@@ -216,15 +234,21 @@ export function AuthForm({
 
         {currentMode === 'reset' && (
           <div>
-            <label className="block text-sm font-medium mb-2">Email</label>
+            <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>Email</label>
             <div className="relative">
-              <Mail className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+              <Mail className="absolute left-3 top-3 w-5 h-5" style={{ color: 'var(--text-muted)' }} />
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition"
+                style={{
+                  background: 'var(--bg-input)',
+                  borderColor: 'var(--border-color)',
+                  color: 'var(--text-primary)',
+                  boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)'
+                }}
                 disabled={isLoading}
                 required
               />
@@ -235,7 +259,8 @@ export function AuthForm({
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full py-3 px-4 text-white font-medium rounded-xl transition-transform hover:scale-[1.02] shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+          style={{ background: 'var(--accent)' }}
         >
           {isLoading ? 'Processing...' : 'Continue'}
         </button>
@@ -245,38 +270,42 @@ export function AuthForm({
         <div className="mt-4 space-y-2">
           <button
             onClick={() => changeMode('reset')}
-            className="w-full text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+            className="w-full text-sm hover:underline transition-colors"
+            style={{ color: 'var(--accent)' }}
           >
             Forgot password?
           </button>
         </div>
       )}
 
-      <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700 space-y-2">
+      <div className="mt-6 pt-6 border-t font-medium space-y-2" style={{ borderColor: 'var(--border-color)' }}>
         {currentMode === 'login' && (
           <button
             onClick={() => changeMode('signup')}
-            className="w-full text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+            className="w-full text-sm hover:underline transition-colors block text-center"
+            style={{ color: 'var(--text-muted)' }}
           >
-            Don't have an account? <span className="font-medium">Sign up</span>
+            Don't have an account? <span style={{ color: 'var(--text-primary)' }}>Sign up</span>
           </button>
         )}
 
         {currentMode === 'signup' && (
           <button
             onClick={() => changeMode('login')}
-            className="w-full text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+            className="w-full text-sm hover:underline transition-colors block text-center"
+            style={{ color: 'var(--text-muted)' }}
           >
-            Already have an account? <span className="font-medium">Sign in</span>
+            Already have an account? <span style={{ color: 'var(--text-primary)' }}>Sign in</span>
           </button>
         )}
 
         {currentMode === 'reset' && (
           <button
             onClick={() => changeMode('login')}
-            className="w-full text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+            className="w-full text-sm hover:underline transition-colors block text-center"
+            style={{ color: 'var(--text-muted)' }}
           >
-            Back to <span className="font-medium">Sign in</span>
+            Back to <span style={{ color: 'var(--text-primary)' }}>Sign in</span>
           </button>
         )}
       </div>
