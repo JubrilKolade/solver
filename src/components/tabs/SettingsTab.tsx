@@ -7,7 +7,7 @@ import { AlertCircle, CheckCircle, Mail, User, LogOut, Trash2, Bell, Lock } from
 export function SettingsTab() {
   const { user, profile, error, clearError, updateProfile, signOut, deleteAccount } = useAuth();
   const { isDark, toggleTheme } = useTheme();
-  
+
   const [displayName, setDisplayName] = useState(profile?.displayName || '');
   const [bio, setBio] = useState('');
   const [success, setSuccess] = useState('');
@@ -33,7 +33,7 @@ export function SettingsTab() {
     try {
       // Update Firebase auth profile
       await updateProfile(displayName);
-      
+
       // Save extended profile data
       await fb.saveUserProfile({
         displayName,
@@ -61,13 +61,13 @@ export function SettingsTab() {
   const handleDeleteAccount = async () => {
     try {
       setIsLoading(true);
-      
+
       // Delete user data from database
       await fb.deleteUserData();
-      
+
       // Delete Firebase account
       await deleteAccount();
-      
+
       setShowDeleteConfirm(false);
     } catch (err) {
       console.error('Delete failed:', err);
@@ -78,16 +78,17 @@ export function SettingsTab() {
 
   if (!user || profile?.isAnonymous) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center px-4">
-        <div className="text-center max-w-md">
-          <Lock className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold mb-2">Sign In Required</h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
+      <div className="min-h-[60vh] flex items-center justify-center px-4 animate-fade-in-up">
+        <div className="text-center max-w-md glass-card p-10">
+          <Lock className="w-12 h-12 mx-auto mb-4" style={{ color: 'var(--text-muted)' }} />
+          <h2 className="text-2xl font-display mb-2" style={{ color: 'var(--text-primary)' }}>Sign In Required</h2>
+          <p className="mb-6" style={{ color: 'var(--text-muted)' }}>
             Please sign in or create an account to access settings.
           </p>
           <a
             href="#/auth"
-            className="inline-block px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition"
+            className="inline-block px-8 py-3 text-white font-medium rounded-xl transition-transform hover:scale-105 shadow-lg"
+            style={{ background: 'var(--accent)' }}
           >
             Go to Sign In
           </a>
@@ -97,17 +98,18 @@ export function SettingsTab() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Account Settings</h1>
+    <div className="max-w-2xl mx-auto px-4 py-8 animate-fade-in-up">
+      <h1 className="text-3xl font-display mb-8" style={{ color: 'var(--text-primary)' }}>Account Settings</h1>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex gap-3">
-          <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+        <div className="mb-6 p-4 border rounded-xl flex gap-3 animate-fade-in" style={{ background: 'rgba(239,68,68,0.1)', borderColor: 'rgba(239,68,68,0.3)' }}>
+          <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" style={{ color: '#ef4444' }} />
           <div>
-            <p className="text-sm font-medium text-red-800 dark:text-red-300">{error}</p>
+            <p className="text-sm font-medium" style={{ color: '#ef4444' }}>{error}</p>
             <button
               onClick={clearError}
-              className="text-xs text-red-600 dark:text-red-400 hover:underline mt-1"
+              className="text-xs hover:underline mt-1 transition"
+              style={{ color: '#fca5a5' }}
             >
               Dismiss
             </button>
@@ -116,38 +118,39 @@ export function SettingsTab() {
       )}
 
       {success && (
-        <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg flex gap-3">
-          <CheckCircle className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
-          <p className="text-sm text-green-800 dark:text-green-300">{success}</p>
+        <div className="mb-6 p-4 border rounded-xl flex gap-3 animate-fade-in" style={{ background: 'var(--success-glow)', borderColor: 'rgba(34,197,94,0.3)' }}>
+          <CheckCircle className="w-5 h-5 shrink-0 mt-0.5" style={{ color: 'var(--success)' }} />
+          <p className="text-sm font-medium" style={{ color: 'var(--success)' }}>{success}</p>
         </div>
       )}
 
       {/* Profile Section */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 mb-6">
-        <h2 className="text-xl font-bold mb-6">Profile Information</h2>
+      <div className="glass-card p-6 sm:p-8 mb-6">
+        <h2 className="text-xl font-display mb-6" style={{ color: 'var(--text-primary)' }}>Profile Information</h2>
 
         <form onSubmit={handleProfileUpdate} className="space-y-6">
           {/* Email Display */}
           <div>
-            <label className="block text-sm font-medium mb-2">Email</label>
-            <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700">
-              <Mail className="w-5 h-5 text-gray-400" />
-              <span className="text-gray-700 dark:text-gray-300">{user?.email || 'No email set'}</span>
+            <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>Email</label>
+            <div className="flex items-center gap-3 p-3 border rounded-xl" style={{ background: 'var(--bg-subtle)', borderColor: 'var(--border-color)' }}>
+              <Mail className="w-5 h-5" style={{ color: 'var(--text-muted)' }} />
+              <span style={{ color: 'var(--text-primary)' }}>{user?.email || 'No email set'}</span>
             </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">Primary contact for account recovery</p>
+            <p className="text-xs mt-2" style={{ color: 'var(--text-muted)' }}>Primary contact for account recovery</p>
           </div>
 
           {/* Display Name */}
           <div>
-            <label className="block text-sm font-medium mb-2">Display Name</label>
+            <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>Display Name</label>
             <div className="relative">
-              <User className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+              <User className="absolute left-3 top-3 w-5 h-5" style={{ color: 'var(--text-muted)' }} />
               <input
                 type="text"
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 placeholder="Your name"
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:border-transparent transition"
+                style={{ background: 'var(--bg-input)', borderColor: 'var(--border-color)', color: 'var(--text-primary)', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)' }}
                 disabled={isLoading}
               />
             </div>
@@ -155,23 +158,25 @@ export function SettingsTab() {
 
           {/* Bio */}
           <div>
-            <label className="block text-sm font-medium mb-2">Bio (Optional)</label>
+            <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>Bio (Optional)</label>
             <textarea
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               placeholder="Tell us about yourself..."
               maxLength={160}
               rows={3}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:border-transparent transition resize-none"
+              style={{ background: 'var(--bg-input)', borderColor: 'var(--border-color)', color: 'var(--text-primary)', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)' }}
               disabled={isLoading}
             />
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{bio.length}/160 characters</p>
+            <p className="text-xs mt-1 text-right" style={{ color: 'var(--text-muted)' }}>{bio.length}/160 characters</p>
           </div>
 
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full py-3 px-4 text-white font-medium rounded-xl transition-transform hover:scale-[1.02] shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+            style={{ background: 'var(--accent)' }}
           >
             {isLoading ? 'Saving...' : 'Save Changes'}
           </button>
@@ -179,90 +184,98 @@ export function SettingsTab() {
       </div>
 
       {/* Preferences Section */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 mb-6">
-        <h2 className="text-xl font-bold mb-6">Preferences</h2>
+      <div className="glass-card p-6 sm:p-8 mb-6">
+        <h2 className="text-xl font-display mb-6" style={{ color: 'var(--text-primary)' }}>Preferences</h2>
 
         <div className="space-y-4">
           {/* Theme Toggle */}
-          <div className="flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition cursor-pointer" onClick={toggleTheme}>
+          <div className="flex items-center justify-between p-4 border rounded-xl transition cursor-pointer hover:bg-black/5 dark:hover:bg-white/5"
+            style={{ borderColor: 'var(--border-color)' }}
+            onClick={toggleTheme}>
             <div>
-              <p className="font-medium">Dark Mode</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Toggle dark theme</p>
+              <p className="font-medium" style={{ color: 'var(--text-primary)' }}>Dark Mode</p>
+              <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>Toggle dark theme</p>
             </div>
-            <div className="w-12 h-6 bg-gray-300 dark:bg-blue-600 rounded-full relative transition">
+            <div className="w-12 h-6 rounded-full relative transition" style={{ background: isDark ? 'var(--accent)' : 'var(--border-color)' }}>
               <div
-                className={`absolute top-0.5 w-5 h-5 bg-white rounded-full transition-transform ${isDark ? 'translate-x-6' : ''}`}
+                className={`absolute top-0.5 w-5 h-5 bg-white rounded-full transition-transform ${isDark ? 'translate-x-6' : 'translate-x-[2px]'}`}
+                style={{ boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}
               />
             </div>
           </div>
 
           {/* Notifications */}
-          <div className="flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg text-gray-400 cursor-not-allowed">
+          <div className="flex items-center justify-between p-4 border rounded-xl cursor-not-allowed opacity-60"
+            style={{ borderColor: 'var(--border-color)' }}>
             <div>
-              <p className="font-medium">Notifications</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Coming soon</p>
+              <p className="font-medium" style={{ color: 'var(--text-primary)' }}>Notifications</p>
+              <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>Coming soon</p>
             </div>
-            <Bell className="w-5 h-5 opacity-50" />
+            <Bell className="w-5 h-5" style={{ color: 'var(--text-muted)' }} />
           </div>
         </div>
       </div>
 
       {/* Session Section */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 mb-6">
-        <h2 className="text-xl font-bold mb-6">Session</h2>
+      <div className="glass-card p-6 sm:p-8 mb-6">
+        <h2 className="text-xl font-display mb-6" style={{ color: 'var(--text-primary)' }}>Session</h2>
 
         <button
           onClick={handleSignOut}
           disabled={isLoading}
-          className="w-full py-3 px-4 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition flex items-center justify-center gap-2 disabled:opacity-50"
+          className="w-full py-3 px-4 border font-medium rounded-xl transition hover:bg-black/5 dark:hover:bg-white/5 flex items-center justify-center gap-2 disabled:opacity-50"
+          style={{ borderColor: 'var(--border-color)', color: 'var(--text-primary)' }}
         >
           <LogOut className="w-5 h-5" />
           Sign Out
         </button>
 
-        <p className="text-xs text-gray-500 dark:text-gray-400 mt-4 text-center">
+        <p className="text-xs mt-4 text-center" style={{ color: 'var(--text-muted)' }}>
           Sign out from this device. You'll need to sign in again on next visit.
         </p>
       </div>
 
       {/* Danger Zone */}
-      <div className="bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800 p-6">
-        <h2 className="text-xl font-bold text-red-900 dark:text-red-300 mb-4">Danger Zone</h2>
+      <div className="glass-card p-6 sm:p-8 mb-6 border-b-0" style={{ borderColor: 'var(--border-accent)', background: 'var(--accent-glow)' }}>
+        <h2 className="text-xl font-display font-bold mb-4" style={{ color: 'var(--accent)' }}>Danger Zone</h2>
 
         {!showDeleteConfirm ? (
           <button
             onClick={() => setShowDeleteConfirm(true)}
-            className="w-full py-3 px-4 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition flex items-center justify-center gap-2"
+            className="w-full py-3 px-4 font-medium rounded-xl transition-transform hover:scale-[1.02] flex items-center justify-center gap-2 text-white shadow-lg"
+            style={{ background: 'var(--accent)' }}
           >
             <Trash2 className="w-5 h-5" />
             Delete Account
           </button>
         ) : (
-          <div className="space-y-4">
-            <div className="p-4 bg-red-100 dark:bg-red-900/50 rounded-lg border border-red-200 dark:border-red-800">
-              <p className="font-medium text-red-900 dark:text-red-300 mb-2">This action cannot be undone.</p>
-              <p className="text-sm text-red-800 dark:text-red-400">
+          <div className="space-y-4 animate-fade-in">
+            <div className="p-4 rounded-xl border flex flex-col gap-2" style={{ background: 'rgba(239,68,68,0.1)', borderColor: 'rgba(239,68,68,0.3)' }}>
+              <p className="font-bold uppercase tracking-wider text-sm" style={{ color: '#ef4444' }}>This action cannot be undone.</p>
+              <p className="text-sm font-medium" style={{ color: '#ef4444' }}>
                 Deleting your account will:
               </p>
-              <ul className="text-sm text-red-800 dark:text-red-400 list-disc list-inside mt-2 space-y-1">
+              <ul className="text-sm list-disc list-inside mt-2 space-y-1" style={{ color: 'rgba(239,68,68,0.8)' }}>
                 <li>Permanently delete your account</li>
                 <li>Remove all your data and statistics</li>
                 <li>Cancel any active sessions</li>
               </ul>
             </div>
 
-            <div className="flex gap-3">
+            <div className="flex gap-3 mt-4">
               <button
                 onClick={() => setShowDeleteConfirm(false)}
                 disabled={isLoading}
-                className="flex-1 py-2 px-4 border border-red-300 dark:border-red-700 text-red-700 dark:text-red-400 font-medium rounded-lg hover:bg-red-50 dark:hover:bg-red-900/30 transition disabled:opacity-50"
+                className="flex-1 py-3 px-4 border font-medium rounded-xl transition hover:bg-black/5 dark:hover:bg-white/5 disabled:opacity-50"
+                style={{ borderColor: 'var(--border-color)', color: 'var(--text-primary)' }}
               >
                 Cancel
               </button>
               <button
                 onClick={handleDeleteAccount}
                 disabled={isLoading}
-                className="flex-1 py-2 px-4 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition disabled:opacity-50"
+                className="flex-1 py-3 px-4 text-white font-medium rounded-xl transition-transform hover:scale-[1.02] disabled:opacity-50 disabled:hover:scale-100 shadow-lg"
+                style={{ background: 'var(--accent)' }}
               >
                 {isLoading ? 'Deleting...' : 'Yes, Delete My Account'}
               </button>
