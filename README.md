@@ -1,6 +1,6 @@
 # Solver 🧮
 
-A comprehensive web-based math problem solver with support for arithmetic, algebra, calculus, geometry, and college-level mathematics. Powered by React, TypeScript, and MathJS with OCR capabilities for solving problems from images.
+A comprehensive web-based math problem solver with support for arithmetic, algebra, calculus, geometry, and college-level mathematics. Powered by React, TypeScript, MathJS, and Firebase, featuring OCR capabilities, handwriting recognition, offline support, a gamified practice system, and real-time collaboration.
 
 ## Features ✨
 
@@ -10,32 +10,41 @@ A comprehensive web-based math problem solver with support for arithmetic, algeb
 - **Step-by-Step Solutions**: Every problem comes with detailed explanations of each solving step
 - **Real-time Solving**: Instant results with color-coded results and formatted expressions
 
-### **Image Recognition**
-- **OCR Technology**: Upload photos of handwritten or printed math problems
-- **Tesseract.js Integration**: Extract text from images with 80+ language support
+### **Image & Input Recognition**
+- **OCR Technology**: Upload photos of handwritten or printed math problems using Tesseract.js
+- **Handwriting Canvas**: Draw math problems directly on the screen for instant recognition and solving
 - **Editable Extraction**: Review and correct extracted text before solving
 - **Drag & Drop Support**: Easy image upload with file validation
 
 ### **Geometry Tools**
 - **Shape Calculator**: Area, perimeter, volume calculations for common shapes
 - **Multiple Formulas**: Various geometric formulas and theorems
-- **Value Input**: Interactive form for entering known values
-- **Formula Selection**: Choose from multiple calculation methods per shape
+- **Interactive Input**: Visual forms for entering known values to yield instant calculations
 
-### **Additional Features**
-- **Problem History**: Track and revisit recently solved problems (50 problem limit)
-- **Example Problems**: Browse categorized example problems for quick learning
-- **Quick Actions**: Pre-loaded common problem templates
-- **Mobile Responsive**: Fully responsive design for desktop and mobile devices
-- **Dark Theme**: Modern dark UI with smooth animations
+### **Gamification & Practice**
+- **User Accounts & Authentication**: Secure login/signup powered by Firebase Auth, with optional anonymous profiles
+- **Dashboard & Analytics**: Track your total solves, XP, current/best streaks, and topic-specific accuracy
+- **Daily Problems**: Return every day for a unique math challenge and earn bonus XP
+- **Practice Mode**: Test your skills against randomly generated problems to build your streak
+- **Achievements System**: Unlock badges like "Math Master" and "Perfect Week"
+- **Theory Cards**: Learn mathematical concepts with interactive example problems
+
+### **Advanced Functionality**
+- **Offline Mode**: Fully functional offline support powered by Service Workers—keep solving when disconnected!
+- **Collaborative Mode**: Work together on complex math problems in real-time
+- **Problem History**: Automatically saves and tracks your past solved problems
+- **Premium Features**: Certain advanced tools (like collaboration and dashboard) are gated behind user registration
+- **Keyboard Shortcuts**: Navigate between tools quickly with global hotkeys
 
 ## Technology Stack
 
 - **Frontend**: React 19 with TypeScript
 - **Build Tool**: Vite 7
-- **Styling**: Tailwind CSS 4
+- **Styling**: Tailwind CSS 4 & `clsx` / `tailwind-merge`
 - **Math Engine**: MathJS 15
-- **OCR**: Tesseract.js 7
+- **OCR & Interactive**: Tesseract.js 7, Draw Canvas
+- **Backend & Database**: Firebase 12 (Auth, Firestore)
+- **Data Visualization**: Plotly.js
 - **Type Safety**: TypeScript 5.9
 - **Code Quality**: ESLint 9
 
@@ -55,100 +64,57 @@ cd solver
 # Install dependencies
 npm install
 
+# Setup Firebase credentials
+# Make sure to copy `.env.example` to `.env` and fill in your Firebase configuration keys
+
 # Start development server
 npm run dev
 
 # Build for production
 npm run build
-
-# Preview production build
-npm run preview
 ```
 
 ## Project Structure
 
 ```
 src/
-├── App.tsx                 # Main application component with UI tabs
-├── main.tsx               # Entry point
-├── index.css              # Global styles
+├── App.tsx                 # Main application orchestration & offline handling
+├── main.tsx                # React entry point
+├── index.css               # Global Tailwind styles
 ├── components/
-│   ├── ImageUpload.tsx    # OCR image upload component
-│   └── GeometryTools.tsx  # Geometry problem solver interface
+│   ├── tabs/               # Tab-specific content (Solver, Upload, Practice, etc.)
+│   ├── layout/             # Header, Footer, NavBar, BackgroundOrbs
+│   └── ErrorBoundary.tsx   # Global app stability
+├── contexts/
+│   ├── AuthContext.tsx     # Firebase Authentication state
+│   └── ThemeContext.tsx    # App theming and styling state
+├── hooks/
+│   ├── useAuth.ts          # Custom auth hook
+│   └── useKeyboardShortcuts.ts # App navigation shortcuts
+├── services/
+│   └── firebaseService.ts  # Database operations (history, stats, usage)
 └── utils/
-    ├── mathSolver.ts      # Core solving logic & example problems
-    ├── advancedSolvers.ts # Advanced math solvers (statistics, sequences, etc.)
-    ├── collegeSolvers.ts  # College-level math solvers (calculus, linear algebra)
-    ├── geometrySolver.ts  # Geometry calculations
-    └── cn.ts              # Utility function for className merging
+    ├── mathSolver.ts       # Core solving logic & routing
+    ├── geometrySolver.ts   # Geometry algorithms
+    ├── offline.ts          # Service worker registration
+    └── cn.ts               # Class name merging utility
 ```
 
-## Usage
+## Usage Insights
 
-### Solving Math Problems
+1. **Standard Solving**: Switch to the **Solver** tab, type a problem like `derivative of x^3 + 2x` or `eigenvalues of 4, 1; 2, 3`, and hit enter.
+2. **Visual Input**: Use the **Upload** tab for camera/image uploads or the **Draw** tab to sketch out equations.
+3. **Practice**: Go to **Practice** or **Daily** to test your knowledge. The app tracks correct answers and boosts your XP and streak metrics.
+4. **Learning**: The **Theory** cards offer flashcard-style learning modules to brush up on specific mathematical concepts.
 
-1. **Type Mode**: Enter expressions or problems directly in the input field
-   - Examples: `2 + 3 * 4`, `x^2 - 5x + 6 = 0`, `sin(30 degrees)`
+## Development Commands
 
-2. **Upload Mode**: Upload an image of a math problem
-   - Click the "Upload Image" button
-   - Select or drag & drop an image file
-   - Review extracted text and click "Solve"
-
-3. **Geometry Mode**: Use dedicated geometry calculator
-   - Select a shape (circle, triangle, rectangle, etc.)
-   - Choose a formula
-   - Enter known values
-   - Get instant calculations
-
-### Supported Problem Types
-
-#### Basic Level
-- Arithmetic: `2 + 3 * 4`, `(15 + 7) * 3 - 10`
-- Algebra: `2x + 5 = 11`, `x^2 - 5x + 6 = 0`
-- Percentages: `what is 15% of 200`
-- Powers & Roots: `2^10`, `sqrt(144)`
-
-#### Intermediate Level
-- Trigonometry: `sin(30 degrees)`, `cos(60 degrees)`
-- Statistics: `median of 1, 2, 3, 4, 5`, `mode of 1, 1, 2, 3`
-- Sequences: `sum of arithmetic sequence`
-- Matrices: `eigenvalues of 4, 1; 2, 3`
-
-#### Advanced Level
-- Calculus: `derivative of x^3 + 2x`, `integrate x^2`
-- Complex Numbers: `modulus of 3 + 4i`
-- Differential Equations: `y'' - 4y' + 3y = 0`
-- Vectors: `dot product of (1,2,3) and (4,5,6)`
-
-## Development
-
-### Scripts
 ```bash
-npm run dev      # Start development server with HMR
-npm run build    # Build for production
-npm run lint     # Run ESLint
-npm run preview  # Preview production build locally
+npm run dev      # Start Vite dev server with Hot Module Replacement
+npm run build    # Compile TypeScript and build for production
+npm run lint     # Run ESLint validation
+npm run preview  # Preview the built production application
 ```
-
-### Adding New Problem Types
-
-1. Add solver function in `src/utils/mathSolver.ts` (or appropriate utils file)
-2. Update `solveProblem()` function to call new solver
-3. Add example problems to `exampleProblems` array
-4. Add category colors and icons to `categoryColors` and `categoryIcons` objects
-
-### Code Quality
-- TypeScript strict mode enabled
-- ESLint configured for React and TypeScript
-- Tailwind CSS for styling consistency
-
-## Performance
-
-- **Single-file Build**: Optimized ~1.1MB minified output
-- **Fast Refresh**: Instant UI updates during development
-- **OCR Optimization**: Tesseract worker runs efficiently in browser
-- **Math Computation**: MathJS provides fast parsing and evaluation
 
 ## Browser Support
 
@@ -158,9 +124,7 @@ npm run preview  # Preview production build locally
 - Mobile browsers (iOS Safari, Chrome Android)
 
 ## License
-
 MIT
 
 ## Contributing
-
 Contributions are welcome! Please feel free to submit a pull request with any improvements or new features.
