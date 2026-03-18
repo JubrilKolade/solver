@@ -10,26 +10,27 @@ export function LoginSignupTab() {
   // If already authenticated, show success
   if (isAuthenticated) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center px-4">
-        <div className="max-w-md w-full text-center">
-          <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
-            <CheckCircle className="w-8 h-8 text-green-600" />
+      <div className="min-h-[60vh] flex items-center justify-center px-4 animate-fade-in-up">
+        <div className="max-w-md w-full text-center glass-card p-8">
+          <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6" style={{ background: 'var(--success-glow)' }}>
+            <CheckCircle className="w-8 h-8" style={{ color: 'var(--success)' }} />
           </div>
-          
-          <h2 className="text-3xl font-bold mb-2">You're Signed In! 🎉</h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
-            Welcome back, <span className="font-semibold">{user?.displayName || user?.email || 'User'}</span>
+
+          <h2 className="text-3xl font-display mb-2" style={{ color: 'var(--text-primary)' }}>You're Signed In! 🎉</h2>
+          <p className="mb-6" style={{ color: 'var(--text-muted)' }}>
+            Welcome back, <span className="font-semibold text-[color:var(--text-primary)]">{user?.displayName || user?.email || 'User'}</span>
           </p>
 
-          <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 mb-6">
-            <p className="text-sm text-green-700 dark:text-green-400">
+          <div className="border rounded-lg p-4 mb-6" style={{ background: 'var(--success-glow)', borderColor: 'var(--success)' }}>
+            <p className="text-sm" style={{ color: 'var(--text-primary)' }}>
               Your stats and progress are now synced across all your devices.
             </p>
           </div>
 
           <a
             href="#/"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition"
+            className="inline-flex items-center gap-2 px-6 py-3 text-white font-medium rounded-lg transition-transform hover:scale-105"
+            style={{ background: 'var(--success)' }}
           >
             Back to Solver <ArrowRight className="w-4 h-4" />
           </a>
@@ -40,22 +41,23 @@ export function LoginSignupTab() {
 
   // Show form for anonymous or form toggling
   return (
-    <div className="min-h-[60vh] flex items-center justify-center px-4 py-8">
+    <div className="min-h-[60vh] flex flex-col items-center justify-center px-4 py-8 animate-fade-in-up">
       <div className="w-full max-w-md">
         {showForm ? (
           <div>
-            <AuthForm 
+            <AuthForm
               mode="signup"
               onSuccess={() => setShowForm(false)}
             />
-            
-            <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
-              <p className="text-sm text-gray-600 dark:text-gray-400 text-center mb-4">
+
+            <div className="mt-8 pt-6 border-t" style={{ borderColor: 'var(--border-color)' }}>
+              <p className="text-sm text-center mb-4" style={{ color: 'var(--text-muted)' }}>
                 Already have an account?
               </p>
               <button
                 onClick={() => setShowForm(false)}
-                className="w-full py-2 px-4 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition"
+                className="w-full py-2 px-4 border font-medium rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition"
+                style={{ borderColor: 'var(--border-color)', color: 'var(--text-primary)' }}
               >
                 Sign In Instead
               </button>
@@ -63,18 +65,19 @@ export function LoginSignupTab() {
           </div>
         ) : (
           <div>
-            <AuthForm 
+            <AuthForm
               mode="login"
               onSuccess={() => setShowForm(true)}
             />
-            
-            <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
-              <p className="text-sm text-gray-600 dark:text-gray-400 text-center mb-4">
+
+            <div className="mt-8 pt-6 border-t" style={{ borderColor: 'var(--border-color)' }}>
+              <p className="text-sm text-center mb-4" style={{ color: 'var(--text-muted)' }}>
                 Don't have an account?
               </p>
               <button
                 onClick={() => setShowForm(true)}
-                className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition"
+                className="w-full py-2 px-4 text-white font-medium rounded-lg transition-transform hover:scale-[1.02] shadow-lg"
+                style={{ background: 'var(--accent)' }}
               >
                 Create Account
               </button>
@@ -84,28 +87,28 @@ export function LoginSignupTab() {
 
         {/* Anonymous Mode Info */}
         {isAnonymous && (
-          <div className="mt-8 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+          <div className="mt-8 p-6 border rounded-2xl glass-card-static" style={{ borderColor: 'var(--border-color)' }}>
             <div className="flex items-start gap-3 mb-3">
-              <Lock className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+              <Lock className="w-5 h-5 shrink-0 mt-0.5" style={{ color: 'var(--accent)' }} />
               <div>
-                <p className="text-sm font-medium text-blue-900 dark:text-blue-300">Guest Mode Active</p>
-                <p className="text-xs text-blue-700 dark:text-blue-400 mt-1">
+                <p className="font-display font-medium" style={{ color: 'var(--text-primary)' }}>Guest Mode Active</p>
+                <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>
                   You can use Solver in guest mode, but creating an account lets you:
                 </p>
               </div>
             </div>
-            <ul className="space-y-2 ml-8">
-              <li className="text-xs text-blue-700 dark:text-blue-400 flex items-center gap-2">
-                <Zap className="w-3 h-3" /> Sync progress across devices
+            <ul className="space-y-2 ml-8 mt-4">
+              <li className="text-xs flex items-center gap-2" style={{ color: 'var(--text-secondary)' }}>
+                <Zap className="w-4 h-4" style={{ color: 'var(--accent)' }} /> Sync progress across devices
               </li>
-              <li className="text-xs text-blue-700 dark:text-blue-400 flex items-center gap-2">
-                <Zap className="w-3 h-3" /> Save your statistics & achievements
+              <li className="text-xs flex items-center gap-2" style={{ color: 'var(--text-secondary)' }}>
+                <Zap className="w-4 h-4" style={{ color: 'var(--accent)' }} /> Save your statistics & achievements
               </li>
-              <li className="text-xs text-blue-700 dark:text-blue-400 flex items-center gap-2">
-                <Zap className="w-3 h-3" /> Collaborate with others
+              <li className="text-xs flex items-center gap-2" style={{ color: 'var(--text-secondary)' }}>
+                <Zap className="w-4 h-4" style={{ color: 'var(--accent)' }} /> Collaborate with others
               </li>
-              <li className="text-xs text-blue-700 dark:text-blue-400 flex items-center gap-2">
-                <Zap className="w-3 h-3" /> Access premium features
+              <li className="text-xs flex items-center gap-2" style={{ color: 'var(--text-secondary)' }}>
+                <Zap className="w-4 h-4" style={{ color: 'var(--accent)' }} /> Access premium features
               </li>
             </ul>
           </div>
